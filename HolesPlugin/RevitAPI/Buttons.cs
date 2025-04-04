@@ -24,23 +24,49 @@ namespace HolesPlugin
 
         public Result OnStartup(UIControlledApplication application)
         {
-            RibbonPanel panel;
+            RibbonPanel panel = null;
+            string panelName = "Отверстия";
+
+            bool tabCreated = false;
             try
             {
-                panel = application.GetRibbonPanels(tabName).First();
+                application.GetRibbonPanels(tabName).First();
             }
             catch (Exception)
             {
                 application.CreateRibbonTab(tabName);
+                tabCreated = true;
             }
 
-            panel = application.CreateRibbonPanel(tabName, "Отверстия");
-
-            panel.AddItem(new PushButtonData(nameof(MainRevitFunction), "Отметка низа\nотносительно 0.000", assemblyLocation, typeof(MainRevitFunction).FullName)
+            try
             {
-                LargeImage = GetBitmapImage(Properties.Resources.ETMHolesPluginLogo, 32, 32),
-                LongDescription = "Плагин для расположения отверстии относительно отметки 0.000"
-            });
+                foreach (RibbonPanel existingPanel in application.GetRibbonPanels(tabName))
+                {
+                    if (existingPanel.Name == panelName)
+                    {
+                        panel = existingPanel;
+                        break;
+                    }
+                }
+
+                if (panel == null)
+                {
+                    panel = application.CreateRibbonPanel(tabName, panelName);
+                }
+            }
+            catch (Exception)
+            {
+                return Result.Failed;
+            }
+
+            if (panel != null)
+            {
+                panel.AddItem(new PushButtonData(nameof(MainRevitFunction), "Отметка низа\nотносительно 0.000", assemblyLocation, typeof(MainRevitFunction).FullName)
+                {
+                    LargeImage = GetBitmapImage(Properties.Resources.ETMHolesPluginLogo, 32, 32),
+                    LongDescription = "Плагин для расположения отверстии относительно отметки 0.000"
+                });
+            }
 
             return Result.Succeeded;
         }
