@@ -56,6 +56,14 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\ICalculationService.cs" />
+    <Compile Include="Interfaces\ICoordinatesService.cs" />
+    <Compile Include="Interfaces\IElementService.cs" />
+    <Compile Include="Interfaces\IFamilyService.cs" />
+    <Compile Include="Models\CalculationService.cs" />
+    <Compile Include="Models\CoordinatesService.cs" />
+    <Compile Include="Models\ElementService.cs" />
+    <Compile Include="Models\FamilyService.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -86,5 +94,6 @@
   <ItemGroup>
     <None Include="Resources\ETMHolesPluginLogo.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
