@@ -32,6 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="RevitAPI">
       <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2021\RevitAPI.dll</HintPath>
       <Private>False</Private>
@@ -64,6 +65,7 @@
     <Compile Include="Models\CoordinatesService.cs" />
     <Compile Include="Models\ElementService.cs" />
     <Compile Include="Models\FamilyService.cs" />
+    <Compile Include="Models\HolesMainCalculation.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

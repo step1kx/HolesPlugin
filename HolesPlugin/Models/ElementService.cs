@@ -10,7 +10,7 @@ namespace HolesPlugin.Models
 {
     internal class ElementService : IElementService
     {
-        public List<Element> GetElementsOfFamilyType(Document doc, FamilySymbol familySymbol) // Изменили FamilyType на FamilySymbol
+        public List<Element> GetElementsOfFamilySymbols(Document doc, FamilySymbol familySymbol) // Изменили FamilyType на FamilySymbol
         {
             FilteredElementCollector collector = new FilteredElementCollector(doc)
                 .OfClass(typeof(FamilyInstance))
