@@ -5,29 +5,44 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace HolesPlugin.Models
 {
     public class CoordinatesService : ICoordinatesService
     {
-        public XYZ GetBasePoint(Document doc)
+        public double GetBasePointZ(Document doc)
         {
             FilteredElementCollector collector = new FilteredElementCollector(doc)
                 .OfClass(typeof(BasePoint))
                 .WhereElementIsNotElementType();
 
             BasePoint basePoint = collector.FirstOrDefault(e => (e as BasePoint).IsShared == false) as BasePoint;
-            return basePoint?.Position ?? XYZ.Zero;
+            if (basePoint != null && basePoint.Position != null)
+            {
+                double zValue = basePoint.Position.Z;
+                double roundedZ = Round(zValue, 0); // Округляем до 0 знаков, как в Dynamo
+                MessageBox.Show($"Z-координата базовой точки = {roundedZ}");
+                return roundedZ;
+            }
+            MessageBox.Show("Базовая точка не найдена.");
+            return 0.0; // Возвращаем 0, если точка не найдена
         }
 
-        public XYZ GetSurveyPoint(Document doc)
+        public double GetSurveyPointZ(Document doc)
         {
             FilteredElementCollector collector = new FilteredElementCollector(doc)
-               .OfClass(typeof(BasePoint))
-               .WhereElementIsNotElementType();
+                .OfClass(typeof(BasePoint))
+                .WhereElementIsNotElementType();
 
             BasePoint surveyPoint = collector.FirstOrDefault() as BasePoint;
-            return surveyPoint?.Position ?? XYZ.Zero;
+            if (surveyPoint != null && surveyPoint.Position != null)
+            {
+                double zValue = surveyPoint.Position.Z;
+                double roundedZ = Round(zValue, 0); // Округляем до 0 знаков
+                return roundedZ;
+            }
+            return 0.0; // Возвращаем 0, если точка не найдена
         }
 
         public double Round(double number, int digits)
@@ -39,5 +54,7 @@ namespace HolesPlugin.Models
         {
             return a - b;
         }
+
+        
     }
 }

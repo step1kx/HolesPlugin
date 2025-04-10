@@ -16,6 +16,7 @@ using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using HolesPlugin.Models;
+using System;
 
 
 namespace HolesPlugin
@@ -31,15 +32,29 @@ namespace HolesPlugin
             UIDocument uidoc = activeUIDocument;
             doc = uidoc.Document;
 
-            var familyService = new FamilyService();
-            var elementService = new ElementService();
-            var coordinatesService = new CoordinatesService();
-            var calculationService = new CalculationService();
+            try
+            {
+                var familyService = new FamilyService();
+                var elementService = new ElementService();
+                var coordinatesService = new CoordinatesService();
+                var calculationService = new CalculationService();
 
-            var calculator = new HolesMainCalculation(doc, familyService, elementService, calculationService, coordinatesService);
-            calculator.CalculateHoleElevations();
+                var calculator = new HolesMainCalculation(doc, familyService, elementService, calculationService, coordinatesService);
 
-            return Result.Succeeded;
+                using (Transaction tx = new Transaction(doc, "Calculate Hole Elevations"))
+                {
+                    tx.Start(); 
+                    calculator.CalculateHoleElevations(); 
+                    tx.Commit(); 
+                }
+
+                return Result.Succeeded;
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+                return Result.Failed;
+            }
         }
     }
 }

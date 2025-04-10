@@ -12,7 +12,7 @@ namespace HolesPlugin.Interfaces
         List<Element> GetElementsOfFamilySymbols(Document doc, FamilySymbol familySymbol);
         List<Element> GetElementsOfCategory(Document doc, Category category);
         object GetParameterValue(Element element, string parameterName);
-        void SetParameterValue(Element element, string parameterName, object value);
+        void SetParameterValue(Element element, string parameterName, double value);
         XYZ GetLocation(Element element);
     }
 }

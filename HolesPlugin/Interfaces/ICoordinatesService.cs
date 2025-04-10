@@ -9,8 +9,8 @@ namespace HolesPlugin.Interfaces
 {
     public interface ICoordinatesService
     {
-        XYZ GetSurveyPoint(Document doc);
-        XYZ GetBasePoint(Document doc);
+        double GetSurveyPointZ(Document doc);
+        double GetBasePointZ(Document doc);
         double Round(double number, int digits);
         double Subtract(double a, double b);
     }

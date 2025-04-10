@@ -39,20 +39,33 @@ namespace HolesPlugin.Models
             Parameter param = element.LookupParameter(parameterName);
             if (param != null)
             {
-                return param.AsDouble(); 
+                if (param.StorageType == StorageType.Double)
+                {
+                    double internalValue = param.AsDouble(); 
+                    return internalValue * 0.3048; 
+                }
+                else if (param.StorageType == StorageType.String)
+                    return param.AsString();
+                else if (param.StorageType == StorageType.Integer)
+                    return param.AsInteger();
             }
             return null;
         }
 
-        public void SetParameterValue(Element element, string parameterName, object value)
+        public void SetParameterValue(Element element, string parameterName, double valueInMeters)
         {
             Parameter param = element.LookupParameter(parameterName);
-            if (param != null)
+            if (param != null && !param.IsReadOnly)
             {
-                if (value is double)
-                    param.Set((double)value);
-                else if (value is string)
-                    param.Set((string)value);
+                if (param.StorageType == StorageType.Double)
+                {
+                    double valueInFeet = valueInMeters * 3.28084; 
+                    param.Set(valueInFeet);
+                }
+                else
+                {
+                    throw new ArgumentException($"Параметр '{parameterName}' не поддерживает значения типа \"double\".");
+                }
             }
         }
 

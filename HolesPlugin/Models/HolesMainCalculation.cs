@@ -38,9 +38,14 @@ namespace HolesPlugin.Models
         {
             Autodesk.Revit.DB.Document doc = _doc;
             Family holeFamily = _familyService.GetFamilyByName(_doc, "Отверстие");
-            if (holeFamily == null) throw new Exception("Семейство 'Отверстие' не найдено.");
+            if (holeFamily == null)
+            {
+                TaskDialog.Show("Ошибка", "Семейство \"Отверстие\" не найдено в проекте");
+                return;
+            }
 
-            TaskDialog.Show("Загрузка", "Загружаем семейства");
+
+            TaskDialog.Show("Загрузка", "Инициализация семейства");
             List<FamilySymbol> familySymbols = _familyService.GetFamilySymbols(doc, holeFamily);
 
             foreach (FamilySymbol familyType in familySymbols)
@@ -51,23 +56,25 @@ namespace HolesPlugin.Models
                 {
                     string heightParamName = "Отверстие.Высота";
                     string elevationParamName = "Отверстие.Отметка низа";
+                    string genPlan
 
                     double height = (double)_elementService.GetParameterValue(hole, heightParamName);
                     double currentElevation = (double)_elementService.GetParameterValue(hole, elevationParamName);
 
                     double halfHeight = _calculationService.CalculateHalfHeight(height);
 
-                    XYZ surveyPoint = _coordinatesService.GetSurveyPoint(_doc);
-                    XYZ basePoint = _coordinatesService.GetBasePoint(_doc);
+                    double surveyZ = _coordinatesService.GetSurveyPointZ(_doc) * 0.3048; 
+                    double baseZ = _coordinatesService.GetBasePointZ(_doc) * 0.3048;
 
-                    double surveyZ = _coordinatesService.Round(surveyPoint.Z, 2);
-                    double baseZ = _coordinatesService.Round(basePoint.Z, 2);
                     double elevationDifference = _coordinatesService.Subtract(surveyZ, baseZ);
 
-                    double newElevation = currentElevation + elevationDifference - halfHeight;
-                    _elementService.SetParameterValue(hole, elevationParamName, _coordinatesService.Round(newElevation, 2));
+                    double newElevation = currentElevation - elevationDifference - halfHeight;
 
-                    TaskDialog.Show("Info", $"Элемент {hole.Id}: Новая отметка низа = {newElevation}");
+                    _elementService.SetParameterValue(hole, elevationParamName, newElevation);
+
+                    TaskDialog.Show("Debug", $"Элемент {hole.Id}: Новая отметка низа = {newElevation} м, " +
+                        $"Текущая = {currentElevation} м, Высота = {height} м, Разница = {elevationDifference} м, " +
+                        $"SurveyZ = {surveyZ} м, BaseZ = {baseZ} м");
                 }
             }
         }
