@@ -17,16 +17,33 @@ namespace HolesPlugin.Models
                 .OfClass(typeof(BasePoint))
                 .WhereElementIsNotElementType();
 
-            BasePoint basePoint = collector.FirstOrDefault(e => (e as BasePoint).IsShared == false) as BasePoint;
+            BasePoint basePoint = collector
+                .Cast<BasePoint>()
+                .FirstOrDefault(bp => bp.IsShared == false); // Ищем внутреннюю базовую точку
+
             if (basePoint != null && basePoint.Position != null)
             {
-                double zValue = basePoint.Position.Z;
-                double roundedZ = Round(zValue, 0); // Округляем до 0 знаков, как в Dynamo
-                MessageBox.Show($"Z-координата базовой точки = {roundedZ}");
-                return roundedZ;
+                // Проверяем параметр "Генплан - Базовая точка проекта"
+                Parameter param = basePoint.LookupParameter("Отм");
+                if (param != null)
+                {
+                    // Если параметр существует, можем использовать его для проверки (например, вывести значение)
+                    string paramValue = param.AsString() ?? param.AsValueString() ?? "Не определено";
+                    MessageBox.Show($"Параметр 'Отм': {paramValue}");
+                }
+                else
+                {
+                    MessageBox.Show("Параметр 'Отм' не найден.");
+                }
+
+                double zValue = basePoint.Position.Z; 
+                double roundedZ = Round(zValue, 0); 
+                MessageBox.Show($"Z-координата базовой точки = {roundedZ} (футы), конвертировано = {roundedZ * 0.3048} м");
+                return roundedZ; 
             }
+
             MessageBox.Show("Базовая точка не найдена.");
-            return 0.0; // Возвращаем 0, если точка не найдена
+            return 0.0; // Значение по умолчанию, если точка не найдена
         }
 
         public double GetSurveyPointZ(Document doc)
@@ -38,11 +55,12 @@ namespace HolesPlugin.Models
             BasePoint surveyPoint = collector.FirstOrDefault() as BasePoint;
             if (surveyPoint != null && surveyPoint.Position != null)
             {
-                double zValue = surveyPoint.Position.Z;
-                double roundedZ = Round(zValue, 0); // Округляем до 0 знаков
-                return roundedZ;
+                double sValue = surveyPoint.Position.Z;
+                double roundedS = Round(sValue, 0);
+                MessageBox.Show($"Survey-координата = {roundedS}");
+                return roundedS;
             }
-            return 0.0; // Возвращаем 0, если точка не найдена
+            return 0.0; 
         }
 
         public double Round(double number, int digits)

@@ -52,30 +52,33 @@ namespace HolesPlugin.Models
             {
                 List<Element> holes = _elementService.GetElementsOfFamilySymbols(_doc, familyType);
 
-                foreach (Element hole in holes)
-                {
-                    string heightParamName = "Отверстие.Высота";
-                    string elevationParamName = "Отверстие.Отметка низа";
-                    string genPlan
+                double baseZ = _coordinatesService.GetBasePointZ(_doc);
+                double surveyZ = _coordinatesService.GetSurveyPointZ(_doc);
 
-                    double height = (double)_elementService.GetParameterValue(hole, heightParamName);
-                    double currentElevation = (double)_elementService.GetParameterValue(hole, elevationParamName);
 
-                    double halfHeight = _calculationService.CalculateHalfHeight(height);
+                //foreach (Element hole in holes)
+                //{
+                //    string heightParamName = "Отверстие.Высота";
+                //    string elevationParamName = "Отверстие.Отметка низа";
+                //    string genPlanPoint = "Генплан - Базовая точка проекта";
 
-                    double surveyZ = _coordinatesService.GetSurveyPointZ(_doc) * 0.3048; 
-                    double baseZ = _coordinatesService.GetBasePointZ(_doc) * 0.3048;
+                //    double height = (double)_elementService.GetParameterValue(hole, heightParamName);
+                //    double currentElevation = (double)_elementService.GetParameterValue(hole, elevationParamName);
+                //    double genPlanValue = (double)_elementService.GetParameterValue(hole, genPlanPoint);
 
-                    double elevationDifference = _coordinatesService.Subtract(surveyZ, baseZ);
+                //    double halfHeight = _calculationService.CalculateHalfHeight(height);
 
-                    double newElevation = currentElevation - elevationDifference - halfHeight;
+                    
+                //    double elevationDifference = _coordinatesService.Subtract(surveyZ, baseZ);
 
-                    _elementService.SetParameterValue(hole, elevationParamName, newElevation);
+                //    double newElevation = currentElevation - elevationDifference - halfHeight;
 
-                    TaskDialog.Show("Debug", $"Элемент {hole.Id}: Новая отметка низа = {newElevation} м, " +
-                        $"Текущая = {currentElevation} м, Высота = {height} м, Разница = {elevationDifference} м, " +
-                        $"SurveyZ = {surveyZ} м, BaseZ = {baseZ} м");
-                }
+                //    _elementService.SetParameterValue(hole, elevationParamName, newElevation);
+
+                //    TaskDialog.Show("Debug", $"Элемент {hole.Id}: Новая отметка низа = {newElevation} м, " +
+                //        $"Текущая = {currentElevation} м, Высота = {height} м, Разница = {elevationDifference} м, " +
+                //        $"SurveyZ = {surveyZ} м, BaseZ = {baseZ} м");
+                //}
             }
         }
     }
